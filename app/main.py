@@ -8,7 +8,7 @@ from .routes import auth, images
 # Criar as tabelas do banco de dados
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Hama Sharing App App")
+app = FastAPI(title="Hama Sharing App")
 
 # Montar arquivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

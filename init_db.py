@@ -64,6 +64,6 @@ def init_db():
 
 
 if __name__ == "__main__":
-    print("\n🚀 Inicializando Hama Sharing App App...\n")
+    print("\n🚀 Inicializando Hama Sharing App...\n")
     init_db()
     print("✨ Inicialização completa!\n")

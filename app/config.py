@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     """Configurações da aplicação"""
     
     # Informações da aplicação
-    APP_NAME: str = "Hama Sharing App App"
+    APP_NAME: str = "Hama Sharing App"
     APP_VERSION: str = "1.0.0"
     
     # Banco de dados
