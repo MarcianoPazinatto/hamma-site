@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Hama Sharing App App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .container-main {
+            padding: 30px 0;
+        }
+        
+        .admin-title {
+            color: white;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+            font-weight: bold;
+        }
+        
+        .badge-pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .badge-approved {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .badge-admin {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-approve {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-approve:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-reject {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-reject:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        footer {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stats-label {
+            color: #999;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shield-check"></i> Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-danger btn-sm" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-main container">
+        <h1 class="admin-title">
+            <i class="bi bi-shield-check"></i> Painel de Administração
+        </h1>
+
+        <div id="alert-container"></div>
+
+        <!-- Estatísticas -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number" id="pending-count">0</div>
+                    <div class="stats-label">Usuários Pendentes</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number" id="total-count">0</div>
+                    <div class="stats-label">Total de Usuários</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuários Pendentes de Aprovação -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-hourglass-split"></i> Usuários Pendentes de Aprovação
+            </div>
+            <div class="card-body">
+                <div id="pending-users-container">
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>Nenhum usuário pendente de aprovação</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Todos os Usuários -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-people"></i> Todos os Usuários
+            </div>
+            <div class="card-body">
+                <div id="all-users-container">
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>Carregando usuários...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Hama Sharing App App - Painel Admin</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Verificar autenticação
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = '/';
+        }
+
+        // Carregar usuários pendentes
+        async function loadPendingUsers() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/auth/admin/pending-users?token=${token}`);
+                const users = await response.json();
+
+                const container = document.getElementById('pending-users-container');
+                
+                if (!Array.isArray(users) || users.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-check-circle"></i>
+                            <p>Nenhum usuário pendente de aprovação</p>
+                        </div>
+                    `;
+                    document.getElementById('pending-count').textContent = '0';
+                    return;
+                }
+
+                document.getElementById('pending-count').textContent = users.length;
+
+                let html = '<table class="table table-hover">';
+                html += '<thead class="table-light"><tr><th>Username</th><th>Email</th><th>Data</th><th>Ações</th></tr></thead><tbody>';
+                
+                users.forEach(user => {
+                    const date = new Date(user.created_at).toLocaleDateString('pt-BR');
+                    html += `
+                        <tr>
+                            <td><strong>${user.username}</strong></td>
+                            <td>${user.email}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="btn-approve" onclick="approveUser(${user.id})">
+                                    <i class="bi bi-check-lg"></i> Aprovar
+                                </button>
+                                <button class="btn-reject" onclick="rejectUser(${user.id})">
+                                    <i class="bi bi-x-lg"></i> Rejeitar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                document.getElementById('pending-users-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle"></i> Erro ao carregar usuários pendentes
+                    </div>
+                `;
+            }
+        }
+
+        // Carregar todos os usuários
+        async function loadAllUsers() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/auth/admin/all-users?token=${token}`);
+                const users = await response.json();
+
+                const container = document.getElementById('all-users-container');
+                
+                if (!Array.isArray(users) || users.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>Nenhum usuário registrado</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                document.getElementById('total-count').textContent = users.length;
+
+                let html = '<table class="table table-hover">';
+                html += '<thead class="table-light"><tr><th>Username</th><th>Email</th><th>Status</th><th>Tipo</th><th>Data</th></tr></thead><tbody>';
+                
+                users.forEach(user => {
+                    const date = new Date(user.created_at).toLocaleDateString('pt-BR');
+                    const statusBadge = user.is_active ? 
+                        '<span class="badge badge-approved"><i class="bi bi-check-circle"></i> Aprovado</span>' : 
+                        '<span class="badge badge-pending"><i class="bi bi-hourglass-split"></i> Pendente</span>';
+                    const typeBadge = user.is_admin ? 
+                        '<span class="badge badge-admin"><i class="bi bi-shield-check"></i> Admin</span>' : 
+                        '<span class="badge bg-secondary">Usuário</span>';
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${user.username}</strong></td>
+                            <td>${user.email}</td>
+                            <td>${statusBadge}</td>
+                            <td>${typeBadge}</td>
+                            <td>${date}</td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                document.getElementById('all-users-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle"></i> Erro ao carregar usuários
+                    </div>
+                `;
+            }
+        }
+
+        // Aprovar usuário
+        async function approveUser(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/auth/admin/approve-user/${userId}?token=${token}`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('success', `✅ ${data.message}`);
+                    loadPendingUsers();
+                    loadAllUsers();
+                } else {
+                    showAlert('danger', `❌ ${data.detail}`);
+                }
+            } catch (error) {
+                showAlert('danger', '❌ Erro ao aprovar usuário');
+                console.error('Erro:', error);
+            }
+        }
+
+        // Rejeitar usuário
+        async function rejectUser(userId) {
+            if (!confirm('Tem certeza que deseja rejeitar e deletar este usuário?')) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/auth/admin/reject-user/${userId}?token=${token}`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('success', `✅ ${data.message}`);
+                    loadPendingUsers();
+                    loadAllUsers();
+                } else {
+                    showAlert('danger', `❌ ${data.detail}`);
+                }
+            } catch (error) {
+                showAlert('danger', '❌ Erro ao rejeitar usuário');
+                console.error('Erro:', error);
+            }
+        }
+
+        // Mostrar alerta
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadPendingUsers();
+            loadAllUsers();
+        });
+    </script>
+</body>
+</html>

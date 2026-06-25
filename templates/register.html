@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar - Hama Sharing App App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .btn-auth {
+            margin-left: 10px;
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            margin-top: 60px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+        
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            padding: 12px 15px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-image"></i> Hama Sharing App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="register-container">
+        <div class="card">
+            <h1 class="card-title"><i class="bi bi-person-plus"></i> Registrar</h1>
+            <p class="card-subtitle">Crie sua conta</p>
+            
+            <div id="alert-container"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Escolha um username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input 
+                        type="email" 
+                        class="form-control" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Digite seu email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Digite sua senha"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label">Confirmar Senha</label>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="confirm-password" 
+                        name="confirm-password" 
+                        placeholder="Confirme sua senha"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-register">
+                    <i class="bi bi-person-plus"></i> Criar Conta
+                </button>
+            </form>
+
+            <div class="login-link">
+                Já tem conta? <a href="/login">Faça login</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const alertContainer = document.getElementById('alert-container');
+
+            // Validar se as senhas são iguais
+            if (password !== confirmPassword) {
+                alertContainer.innerHTML = '<div class="alert alert-warning" role="alert"><i class="bi bi-exclamation-circle"></i> As senhas não correspondem!</div>';
+                return;
+            }
+
+            // Validar senha mínima
+            if (password.length < 6) {
+                alertContainer.innerHTML = '<div class="alert alert-warning" role="alert"><i class="bi bi-exclamation-circle"></i> A senha deve ter no mínimo 6 caracteres!</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alertContainer.innerHTML = '<div class="alert alert-success" role="alert"><i class="bi bi-check-circle"></i> Conta criada com sucesso! Redirecionando para login...</div>';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                } else {
+                    alertContainer.innerHTML = `<div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-circle"></i> ${data.detail}</div>`;
+                }
+            } catch (error) {
+                alertContainer.innerHTML = '<div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-circle"></i> Erro ao registrar. Tente novamente.</div>';
+                console.error('Erro:', error);
+            }
+        });
+    </script>
+</body>
+</html>

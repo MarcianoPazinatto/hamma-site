@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hama Sharing App App{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .btn-auth {
+            margin-left: 10px;
+        }
+        
+        .container-main {
+            padding: 30px 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 30px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 30px;
+            font-weight: 600;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        footer {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-image"></i> Hama Sharing App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item" id="nav-logado" style="display: none;">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" id="nav-urls" style="display: none;">
+                        <a class="nav-link" href="/urls">
+                            <i class="bi bi-link-45deg"></i> URLs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="btn-login" class="btn btn-primary btn-auth" onclick="window.location.href='/login'">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="btn-register" class="btn btn-secondary btn-auth" onclick="window.location.href='/register'">
+                            <i class="bi bi-person-plus"></i> Registrar
+                        </button>
+                    </li>
+                    <li class="nav-item" id="nav-logout" style="display: none;">
+                        <button class="btn btn-danger btn-auth" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-main container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Hama Sharing App - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Verificar se o usuário está logado
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const loginBtn = document.getElementById('btn-login');
+            const registerBtn = document.getElementById('btn-register');
+            const logoutBtn = document.getElementById('nav-logout');
+            const navLogado = document.getElementById('nav-logado');
+            const navUrls = document.getElementById('nav-urls');
+
+            if (token) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (registerBtn) registerBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (navLogado) navLogado.style.display = 'block';
+                if (navUrls) navUrls.style.display = 'block';
+            } else {
+                if (loginBtn) loginBtn.style.display = 'block';
+                if (registerBtn) registerBtn.style.display = 'block';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (navLogado) navLogado.style.display = 'none';
+                if (navUrls) navUrls.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            checkAuth();
+            window.location.href = '/';
+        }
+
+        // Verificar autenticação ao carregar
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

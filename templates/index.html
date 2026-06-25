@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Hama Sharing App App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .btn-auth {
+            margin-left: 10px;
+        }
+        
+        .container-main {
+            padding: 30px 0;
+        }
+        
+        .hero-section {
+            color: white;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px 0;
+        }
+        
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .gallery-info {
+            padding: 20px;
+        }
+        
+        .gallery-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .gallery-price {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .gallery-owner {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .gallery-date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 30px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 30px;
+            font-weight: 600;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        
+        footer {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-image"></i> Hama Sharing App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-home" href="/">Home</a>
+                    </li>
+                    <li class="nav-item" id="nav-logado" style="display: none;">
+                        <a class="nav-link" id="nav-dashboard" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" id="nav-admin-item" style="display: none;">
+                        <a class="nav-link" id="nav-admin" href="/admin">
+                            <i class="bi bi-shield-check"></i> Admin
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-urls" style="display: none;">
+                        <a class="nav-link" href="/urls">
+                            <i class="bi bi-link-45deg"></i> URLs
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-login-btn">
+                        <button id="btn-login" class="btn btn-primary btn-auth" onclick="window.location.href='/login'">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </button>
+                    </li>
+                    <li class="nav-item" id="nav-register-btn">
+                        <button id="btn-register" class="btn btn-secondary btn-auth" onclick="window.location.href='/register'">
+                            <i class="bi bi-person-plus"></i> Registrar
+                        </button>
+                    </li>
+                    <li class="nav-item" id="nav-logout" style="display: none;">
+                        <button class="btn btn-danger btn-auth" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <h1>My Hama Beads</h1>
+        <p>Olá, seja bem vindo</p>
+    </div>
+
+    <div class="container-main container">
+        <div id="gallery" class="gallery"></div>
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <i class="bi bi-image"></i>
+            <h3>Nenhuma imagem ainda</h3>
+            <p></p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Hama Sharing App App - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/navigation.js"></script>
+    <script>
+        async function loadImages() {
+            try {
+                const response = await fetch('/images/');
+                const images = await response.json();
+
+                const gallery = document.getElementById('gallery');
+                const emptyState = document.getElementById('empty-state');
+
+                if (images.length === 0) {
+                    gallery.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                gallery.innerHTML = '';
+                images.forEach(image => {
+                    const date = new Date(image.created_at).toLocaleDateString('pt-BR');
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <img src="/static/uploads/${image.filename}" alt="${image.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23ccc%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3EImagem não encontrada%3C/text%3E%3C/svg%3E'">
+                        <div class="gallery-info">
+                            <div class="gallery-title" title="${image.title}">${image.title}</div>
+                            <div class="gallery-price">R$ ${image.value.toFixed(2)}</div>
+                            <div class="gallery-owner">Por: ${image.owner.username}</div>
+                            <div class="gallery-date">${date}</div>
+                        </div>
+                    `;
+                    gallery.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar imagens:', error);
+            }
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const isAdmin = localStorage.getItem('is_admin') === '1';
+            const loginBtn = document.getElementById('nav-login-btn');
+            const registerBtn = document.getElementById('nav-register-btn');
+            const logoutBtn = document.getElementById('nav-logout');
+            const navLogado = document.getElementById('nav-logado');
+            const navAdmin = document.getElementById('nav-admin');
+            const navUrls = document.getElementById('nav-urls');
+
+            if (token) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (registerBtn) registerBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (navLogado) navLogado.style.display = 'block';
+                if (navUrls) navUrls.style.display = 'block';
+                
+                // Mostrar admin se for admin
+                if (isAdmin && navAdmin) {
+                    navAdmin.style.display = 'block';
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            checkAuth();
+            window.location.href = '/';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadImages();
+        });
+    </script>
+</body>
+</html>

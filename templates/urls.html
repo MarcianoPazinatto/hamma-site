@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URLs Disponíveis - Hama Sharing App App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .container-main {
+            padding: 40px 0;
+        }
+
+        .page-title {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .user-badge.admin {
+            background: #dc3545;
+        }
+
+        .user-badge.user {
+            background: #28a745;
+        }
+
+        .user-badge.anonymous {
+            background: #6c757d;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .url-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .url-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .url-method {
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .url-method.get {
+            background: #0dcaf0;
+            color: white;
+        }
+
+        .url-method.post {
+            background: #198754;
+            color: white;
+        }
+
+        .url-method.delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .url-path {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .url-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .btn-login {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .btn-login:hover {
+            background: #f0f0f0;
+            color: #764ba2;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .badge-admin-only {
+            background: #dc3545;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-image"></i> Hama Sharing App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-home" href="/">Home</a>
+                    </li>
+                    <li class="nav-item" id="dashboard-link" style="display: none;">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" id="admin-link" style="display: none;">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                    <li class="nav-item" id="login-link">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item" id="logout-link" style="display: none;">
+                        <button class="btn btn-danger btn-sm" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-main container">
+        <h1 class="page-title">
+            <i class="bi bi-link-45deg"></i> URLs Disponíveis
+        </h1>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div id="content-container">
+                    <div class="empty-state">
+                        <i class="bi bi-hourglass-split"></i>
+                        <p>Carregando informações...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Hama Sharing App App</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/navigation.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('is_admin');
+            window.location.href = '/';
+        }
+
+        async function loadAvailableURLs() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/auth/available-urls${token ? '?token=' + token : ''}`);
+                const data = await response.json();
+
+                renderURLs(data);
+                updateNavbar(data);
+            } catch (error) {
+                console.error('Erro ao carregar URLs:', error);
+                document.getElementById('content-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle"></i> Erro ao carregar URLs disponíveis
+                    </div>
+                `;
+            }
+        }
+
+        function updateNavbar(data) {
+            const loginLink = document.getElementById('login-link');
+            const logoutLink = document.getElementById('logout-link');
+            const dashboardLink = document.getElementById('dashboard-link');
+            const adminLink = document.getElementById('admin-link');
+
+            if (data.authenticated) {
+                loginLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+                dashboardLink.style.display = 'block';
+                
+                if (data.is_admin) {
+                    adminLink.style.display = 'block';
+                }
+            } else {
+                loginLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+                dashboardLink.style.display = 'none';
+                adminLink.style.display = 'none';
+            }
+        }
+
+        function renderURLs(data) {
+            const container = document.getElementById('content-container');
+            const isAdmin = data.is_admin || false;
+            const userType = data.user_type || 'anonymous';
+            const username = data.username || '';
+
+            let html = '';
+
+            // User badge
+            if (data.authenticated) {
+                const badgeClass = isAdmin ? 'admin' : 'user';
+                const badgeLabel = isAdmin ? '🔴 Administrador' : '🟢 Usuário';
+                html += `
+                    <div class="text-center mb-4">
+                        <span class="user-badge ${badgeClass}">
+                            <i class="bi bi-person-circle"></i> ${badgeLabel} - ${username}
+                        </span>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="text-center mb-4">
+                        <span class="user-badge anonymous">
+                            <i class="bi bi-person"></i> Usuário Não Autenticado
+                        </span>
+                    </div>
+                    <div class="info-box">
+                        <i class="bi bi-info-circle"></i> <strong>Faça login</strong> para acessar mais funcionalidades!
+                        <a href="/login" class="btn btn-login btn-sm ms-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Ir para Login
+                        </a>
+                    </div>
+                `;
+            }
+
+            // Public URLs
+            html += `<h4 class="section-title"><i class="bi bi-globe"></i> URLs Públicas</h4>`;
+            const publicURLs = {
+                "GET /": "Homepage com galeria pública",
+                "GET /login": "Página de login",
+                "GET /register": "Página de registro",
+                "GET /images/": "API - Lista todas as imagens"
+            };
+
+            for (const [method, desc] of Object.entries(publicURLs)) {
+                html += renderURLItem(method, desc);
+            }
+
+            // User URLs (if authenticated)
+            if (data.authenticated) {
+                html += `<h4 class="section-title"><i class="bi bi-lock"></i> URLs do Usuário Autenticado</h4>`;
+                const userURLs = {
+                    "GET /dashboard": "Painel do usuário para gerenciar imagens",
+                    "GET /urls": "Esta página - Lista de URLs disponíveis",
+                    "POST /images/upload": "API - Fazer upload de imagem (requer token)",
+                    "DELETE /images/{id}": "API - Deletar própria imagem (requer token)",
+                    "GET /auth/user-info": "API - Informações do usuário logado",
+                    "GET /auth/available-urls": "API - Retorna URLs disponíveis (JSON)"
+                };
+
+                for (const [method, desc] of Object.entries(userURLs)) {
+                    html += renderURLItem(method, desc);
+                }
+            }
+
+            // Admin URLs (if admin)
+            if (isAdmin) {
+                html += `<h4 class="section-title"><i class="bi bi-shield-check"></i> URLs de Administrador</h4>`;
+                const adminURLs = {
+                    "GET /admin": "Painel de administração",
+                    "GET /auth/admin/pending-users": "API - Lista usuários pendentes (requer admin)",
+                    "POST /auth/admin/approve-user/{id}": "API - Aprovar usuário (requer admin)",
+                    "POST /auth/admin/reject-user/{id}": "API - Rejeitar usuário (requer admin)",
+                    "GET /auth/admin/all-users": "API - Lista todos os usuários (requer admin)"
+                };
+
+                for (const [method, desc] of Object.entries(adminURLs)) {
+                    html += renderURLItem(method, desc, true);
+                }
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderURLItem(method, description, isAdmin = false) {
+            const parts = method.split(' ');
+            const httpMethod = parts[0];
+            const path = parts.slice(1).join(' ');
+
+            let methodClass = httpMethod.toLowerCase();
+            
+            return `
+                <div class="url-item">
+                    <div>
+                        <span class="url-method ${methodClass}">${httpMethod}</span>
+                        <span class="url-path">${path}</span>
+                        ${isAdmin ? '<span class="badge-admin-only">Admin Only</span>' : ''}
+                    </div>
+                    <div class="url-description">
+                        <i class="bi bi-chat-right-text"></i> ${description}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAvailableURLs();
+        });
+    </script>
+</body>
+</html>

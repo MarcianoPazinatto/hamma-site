@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hama Sharing App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .btn-auth {
+            margin-left: 10px;
+        }
+        
+        .container-main {
+            padding: 30px 0;
+        }
+        
+        .upload-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+        }
+        
+        .upload-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-label {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover {
+            background: #e9ecef;
+            border-color: #764ba2;
+        }
+        
+        .file-input-label.dragover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .btn-upload {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px 0;
+        }
+        
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .gallery-info {
+            padding: 20px;
+        }
+        
+        .gallery-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .gallery-price {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .gallery-date {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 15px;
+        }
+        
+        .gallery-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-edit {
+            flex: 1;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit:hover {
+            background: #5568d3;
+        }
+        
+        .btn-delete {
+            flex: 1;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .modal-preview-image {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        footer {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-image"></i> Hama Sharing App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-home" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-dashboard" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item" id="admin-nav-item" style="display: none;">
+                        <a class="nav-link" id="nav-admin" href="/admin">
+                            <i class="bi bi-shield-check"></i> Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-urls" href="/urls">
+                            <i class="bi bi-link-45deg"></i> URLs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-change-password" href="/change-password">
+                            <i class="bi bi-key"></i> Trocar Senha
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-danger btn-sm" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-main container">
+        <div id="alert-container"></div>
+
+        <div class="upload-section">
+            <h2 class="upload-title">
+                <i class="bi bi-cloud-upload"></i> Enviar Nova Imagem
+            </h2>
+
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="title" class="form-label">Título</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="title" 
+                        name="title" 
+                        placeholder="Digite o título da imagem"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Descrição (Opcional)</label>
+                    <textarea 
+                        class="form-control" 
+                        id="description" 
+                        name="description" 
+                        rows="3" 
+                        placeholder="Descreva a imagem"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="value" class="form-label">Valor (R$)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="value" 
+                        name="value" 
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Imagem</label>
+                    <div class="file-input-wrapper">
+                        <label for="file-input" class="file-input-label" id="file-input-label">
+                            <i class="bi bi-cloud-upload"></i><br>
+                            Clique ou arraste uma imagem aqui<br>
+                            <small>(JPEG, PNG, GIF, WebP)</small>
+                        </label>
+                        <input 
+                            type="file" 
+                            id="file-input" 
+                            name="file" 
+                            accept="image/*"
+                            required
+                        >
+                    </div>
+                    <div class="file-name" id="file-name"></div>
+                </div>
+
+                <button type="submit" class="btn btn-upload">
+                    <i class="bi bi-cloud-upload"></i> Enviar Imagem
+                </button>
+                <div class="loading-spinner" id="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; border-radius: 15px; padding: 30px; margin-top: 50px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">
+            <h3 style="color: #333; margin-bottom: 20px;">
+                <i class="bi bi-pencil-square"></i> Gerenciar Suas Imagens
+            </h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Para editar ou deletar suas imagens, acesse a página de <a href="/gerenciar-imagens" style="color: #667eea; font-weight: bold;">Gerenciar Imagens</a>.
+            </p>
+            <a href="/gerenciar-imagens" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <i class="bi bi-pencil-square"></i> Ir para Gerenciar Imagens
+            </a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Hama Sharing App - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/navigation.js"></script>
+    <script>
+        // Verificar autenticação
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            // Verificar se é admin e mostrar link
+            const isAdmin = localStorage.getItem('is_admin') === '1';
+            const adminNavItem = document.getElementById('admin-nav-item');
+            if (isAdmin && adminNavItem) {
+                adminNavItem.style.display = 'block';
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = '/';
+        }
+
+        // Drag and drop para arquivo
+        const fileInputLabel = document.getElementById('file-input-label');
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+
+        fileInputLabel.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileInputLabel.classList.add('dragover');
+        });
+
+        fileInputLabel.addEventListener('dragleave', () => {
+            fileInputLabel.classList.remove('dragover');
+        });
+
+        fileInputLabel.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileInputLabel.classList.remove('dragover');
+            fileInput.files = e.dataTransfer.files;
+            updateFileName();
+        });
+
+        fileInput.addEventListener('change', updateFileName);
+
+        function updateFileName() {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = `Arquivo selecionado: ${fileInput.files[0].name}`;
+            } else {
+                fileName.textContent = '';
+            }
+        }
+
+        // Upload de imagem
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const value = document.getElementById('value').value;
+            const file = document.getElementById('file-input').files[0];
+            const token = localStorage.getItem('token');
+            const alertContainer = document.getElementById('alert-container');
+            const loadingSpinner = document.getElementById('loading-spinner');
+
+            if (!file) {
+                alertContainer.innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-circle"></i> Selecione uma imagem!</div>';
+                return;
+            }
+
+            // Validar tipo de arquivo
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alertContainer.innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-circle"></i> Tipo de imagem inválido! Use JPEG, PNG, GIF ou WebP.</div>';
+                return;
+            }
+
+            // Validar tamanho (máximo 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alertContainer.innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-circle"></i> Imagem muito grande! Máximo 10MB.</div>';
+                return;
+            }
+
+            try {
+                loadingSpinner.classList.add('show');
+
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('description', description);
+                formData.append('value', value);
+                formData.append('file', file);
+
+                const response = await fetch('/images/upload?token=' + token, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alertContainer.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Imagem enviada com sucesso!</div>';
+                    document.getElementById('upload-form').reset();
+                    fileName.textContent = '';
+                    loadImages();
+                } else {
+                    const data = await response.json();
+                    alertContainer.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ${data.detail}</div>`;
+                }
+            } catch (error) {
+                alertContainer.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Erro ao enviar imagem!</div>';
+                console.error('Erro:', error);
+            } finally {
+                loadingSpinner.classList.remove('show');
+            }
+        });
+
+        // Carregar imagens do usuário
+        async function loadImages() {
+            try {
+                const token = localStorage.getItem('token');
+                // Usar o novo endpoint que já filtra as imagens do usuário autenticado
+                const response = await fetch(`/images/my-images?token=${encodeURIComponent(token)}`);
+                const userImages = await response.json();
+
+                const gallery = document.getElementById('gallery');
+                const emptyState = document.getElementById('empty-state');
+
+                console.log('Token:', token);
+                console.log('User images:', userImages);
+                console.log('Response status:', response.status);
+
+                if (userImages.length === 0) {
+                    gallery.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                gallery.style.display = 'grid';
+                emptyState.style.display = 'none';
+                gallery.innerHTML = '';
+
+                userImages.forEach(image => {
+                    const date = new Date(image.created_at).toLocaleDateString('pt-BR');
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <img src="/static/uploads/${image.filename}" alt="${image.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23ccc%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3EImagem não encontrada%3C/text%3E%3C/svg%3E'">
+                        <div class="gallery-info">
+                            <div class="gallery-title" title="${image.title}">${image.title}</div>
+                            <div class="gallery-price">R$ ${image.value.toFixed(2)}</div>
+                            <div class="gallery-date">${date}</div>
+                            <div class="gallery-actions">
+                                <button class="btn-edit" data-id="${image.id}" data-title="${image.title}" data-value="${image.value}" data-description="${image.description}" data-filename="${image.filename}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                                <button class="btn-delete" data-id="${image.id}">
+                                    <i class="bi bi-trash"></i> Deletar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    gallery.appendChild(item);
+                });
+
+                // Adicionar event listeners aos botões
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        openEditModal(
+                            this.dataset.id,
+                            this.dataset.title,
+                            this.dataset.value,
+                            this.dataset.description,
+                            this.dataset.filename
+                        );
+                    });
+                });
+
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        deleteImage(this.dataset.id);
+                    });
+                });
+            } catch (error) {
+                console.error('Erro ao carregar imagens:', error);
+            }
+        }
+
+        // Deletar imagem
+        async function deleteImage(imageId) {
+            if (!confirm('Tem certeza que deseja deletar esta imagem?')) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/images/${imageId}?token=${token}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    document.getElementById('alert-container').innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Imagem deletada com sucesso!</div>';
+                    loadImages();
+                } else {
+                    const data = await response.json();
+                    document.getElementById('alert-container').innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ${data.detail}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('alert-container').innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Erro ao deletar imagem!</div>';
+                console.error('Erro:', error);
+            }
+        }
+
+        // Abrir modal de edição
+        function openEditModal(imageId, title, value, description, filename) {
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            document.getElementById('editImageId').value = imageId;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editValue').value = value;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editImagePreview').src = `/static/uploads/${filename}`;
+            document.getElementById('editFileInput').value = '';
+            modal.show();
+        }
+
+        // Editar imagem
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const imageId = document.getElementById('editImageId').value;
+            const title = document.getElementById('editTitle').value;
+            const value = document.getElementById('editValue').value;
+            const description = document.getElementById('editDescription').value;
+            const file = document.getElementById('editFileInput').files[0];
+            const token = localStorage.getItem('token');
+            const alertContainer = document.getElementById('alert-container');
+
+            try {
+                const formData = new FormData();
+                if (title) formData.append('title', title);
+                if (value) formData.append('value', value);
+                formData.append('description', description);
+                if (file) formData.append('file', file);
+
+                const response = await fetch(`/images/${imageId}?token=${token}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alertContainer.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Imagem atualizada com sucesso!</div>';
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                    loadImages();
+                } else {
+                    const data = await response.json();
+                    alertContainer.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> ${data.detail}</div>`;
+                }
+            } catch (error) {
+                alertContainer.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Erro ao atualizar imagem!</div>';
+                console.error('Erro:', error);
+            }
+        });
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadImages();
+        });
+    </script>
+
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-pencil"></i> Editar Imagem</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="editImagePreview" class="modal-preview-image" src="" alt="Pré-visualização">
+                    <form id="editForm">
+                        <input type="hidden" id="editImageId">
+                        
+                        <div class="form-group">
+                            <label for="editTitle" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="editTitle" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editValue" class="form-label">Valor (R$)</label>
+                            <input type="number" class="form-control" id="editValue" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editFileInput" class="form-label">Nova Imagem (Opcional)</label>
+                            <input type="file" class="form-control" id="editFileInput" accept="image/*">
+                            <small class="text-muted">Deixe em branco para manter a imagem atual</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Salvar Alterações
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
