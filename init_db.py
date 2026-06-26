@@ -5,9 +5,65 @@ Usa variáveis de ambiente para criar o admin em produção.
 """
 
 import os
+from sqlalchemy import text, inspect
 from app.database import engine, SessionLocal, Base
 from app.models import User
 from app.auth import get_password_hash
+
+
+def ensure_cloudinary_columns():
+    """Adiciona as colunas cloudinary ao banco de dados se não existirem"""
+    print("🔍 Verificando colunas Cloudinary na tabela images...")
+    
+    try:
+        # Inspecionar a tabela images
+        inspector = inspect(engine)
+        columns = inspector.get_columns('images')
+        column_names = [col['name'] for col in columns]
+        
+        # Verificar quais colunas faltam
+        missing_columns = []
+        if 'cloudinary_url' not in column_names:
+            missing_columns.append('cloudinary_url')
+        if 'cloudinary_public_id' not in column_names:
+            missing_columns.append('cloudinary_public_id')
+        
+        if not missing_columns:
+            print("  ✅ Colunas Cloudinary já existem!")
+            return True
+        
+        # Adicionar colunas faltando
+        print(f"  ⚠️  Colunas faltando: {missing_columns}")
+        print(f"  🔧 Adicionando colunas...")
+        
+        # Usar raw connection para executar ALTER TABLE
+        from sqlalchemy.pool import StaticPool
+        conn = engine.raw_connection()
+        cursor = conn.cursor()
+        
+        for col in missing_columns:
+            try:
+                if col == 'cloudinary_url':
+                    cursor.execute("ALTER TABLE images ADD COLUMN cloudinary_url VARCHAR(500) DEFAULT NULL")
+                elif col == 'cloudinary_public_id':
+                    cursor.execute("ALTER TABLE images ADD COLUMN cloudinary_public_id VARCHAR(500) DEFAULT NULL")
+                conn.commit()
+                print(f"    ✅ Coluna '{col}' adicionada!")
+            except Exception as e:
+                if "already exists" in str(e) or "duplicate" in str(e):
+                    print(f"    ℹ️  Coluna '{col}' já existe!")
+                else:
+                    print(f"    ⚠️  Erro ao adicionar '{col}': {e}")
+        
+        cursor.close()
+        conn.close()
+        
+        print("  ✅ Colunas Cloudinary adicionadas com sucesso!")
+        return True
+        
+    except Exception as e:
+        print(f"  ❌ Erro ao adicionar colunas Cloudinary: {e}")
+        return False
 
 
 def init_db():
@@ -17,6 +73,9 @@ def init_db():
     print("📦 Criando tabelas do banco de dados...")
     Base.metadata.create_all(bind=engine)
     print("✅ Tabelas criadas com sucesso!")
+    
+    # Adicionar colunas Cloudinary se não existirem
+    ensure_cloudinary_columns()
     
     # Criar usuário admin
     db = SessionLocal()
