@@ -1,42 +1,19 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from .config import get_settings
-import os
 
-# Obter configurações
 settings = get_settings()
 
-# Usar DATABASE_URL do ambiente (PostgreSQL em produção) ou SQLite em desenvolvimento
-DATABASE_URL = os.getenv("DATABASE_URL", settings.DATABASE_URL)
-
-# Converter postgres:// para postgresql:// se necessário (Render usa postgres://)
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-
-# Configurar argumentos de conexão baseado no tipo de banco
-if DATABASE_URL.startswith("postgresql"):
-    # PostgreSQL
-    engine = create_engine(
-        DATABASE_URL,
-        pool_pre_ping=True,  # Verifica conexões antes de usar
-        pool_size=10,
-        max_overflow=20,
-    )
-else:
-    # SQLite (desenvolvimento)
-    engine = create_engine(
-        DATABASE_URL, 
-        connect_args={"check_same_thread": False}
-    )
-
-SessionLocal = sessionmaker(
-    autocommit=False, 
-    autoflush=False, 
-    bind=engine
+# Create database engine
+engine = create_engine(
+    settings.DATABASE_URL,
+    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {},
+    pool_pre_ping=True,  # Verify connections before using them
 )
 
-Base = declarative_base()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+from .models import Base  # Import Base after engine creation
 
 def get_db():
     db = SessionLocal()
@@ -44,3 +21,9 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def init_db():
+    """Initialize database tables and run migrations if needed"""
+    # Create all tables from models
+    Base.metadata.create_all(bind=engine)
