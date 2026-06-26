@@ -32,7 +32,9 @@ class ImageCreate(ImageBase):
 
 class ImageResponse(ImageBase):
     id: int
-    filename: str
+    filename: Optional[str] = None
+    cloudinary_url: Optional[str] = None
+    cloudinary_public_id: Optional[str] = None
     owner_id: int
     created_at: datetime
 

@@ -38,35 +38,48 @@ async def upload_image(file: UploadFile) -> Tuple[str, str]:
         HTTPException: Se houver erro no upload
     """
     try:
+        print(f"[UPLOAD] Iniciando upload de arquivo: {file.filename}")
         init_cloudinary()
         
         # Ler conteúdo do arquivo
         file_content = await file.read()
+        print(f"[UPLOAD] Arquivo lido com sucesso. Tamanho: {len(file_content)} bytes")
         
         # Fazer upload para Cloudinary com pasta específica
+        print(f"[UPLOAD] Enviando para Cloudinary...")
         result = cloudinary.uploader.upload(
             file_content,
             folder="hama-sharing",  # Pasta no Cloudinary
             resource_type="auto"
         )
         
+        print(f"[UPLOAD] Resposta do Cloudinary: {result}")
+        
         cloudinary_url = result.get("secure_url")
         public_id = result.get("public_id")
         
         if not cloudinary_url or not public_id:
+            print(f"[UPLOAD] ERRO: Resposta incompleta do Cloudinary")
             raise HTTPException(
                 status_code=500,
                 detail="Erro ao processar resposta do Cloudinary"
             )
         
+        print(f"[UPLOAD] Upload bem-sucedido! URL: {cloudinary_url}")
         return cloudinary_url, public_id
         
+    except HTTPException:
+        raise
     except cloudinary.exceptions.Error as e:
+        print(f"[UPLOAD] Erro Cloudinary: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Erro ao fazer upload no Cloudinary: {str(e)}"
         )
     except Exception as e:
+        print(f"[UPLOAD] Erro inesperado: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=f"Erro inesperado durante upload: {str(e)}"
