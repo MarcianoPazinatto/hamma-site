@@ -4,68 +4,93 @@ This script is safe to run multiple times - it checks if columns exist before ad
 """
 
 import os
-from sqlalchemy import text, inspect
-from app.database import engine, SessionLocal
+import sys
+from sqlalchemy import text, inspect, create_engine
+from sqlalchemy.pool import StaticPool
 from app.config import get_settings
+
+def check_column_exists(connection, table_name, column_name):
+    """Check if a column exists in PostgreSQL using information_schema"""
+    try:
+        result = connection.execute(
+            text("""
+                SELECT EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = :table AND column_name = :column
+                )
+            """),
+            {"table": table_name, "column": column_name}
+        )
+        return result.scalar()
+    except Exception as e:
+        print(f"  ⚠️  Erro ao verificar coluna: {e}")
+        return False
 
 def repair_database():
     """Add missing Cloudinary columns to images table if they don't exist"""
     
     print("🔍 Verificando estrutura da tabela 'images'...")
     
-    # Get database inspector
-    inspector = inspect(engine)
+    # Get database URL from settings
+    settings = get_settings()
+    database_url = settings.DATABASE_URL
     
-    # Get columns from images table
+    # Create a new engine connection with explicit transaction handling
     try:
-        columns = inspector.get_columns('images')
-        column_names = [col['name'] for col in columns]
+        engine = create_engine(database_url, isolation_level="AUTOCOMMIT")
+        connection = engine.connect()
     except Exception as e:
-        print(f"❌ Erro ao inspecionar tabela: {e}")
+        print(f"❌ Erro ao conectar ao banco de dados: {e}")
         return False
     
-    print(f"✅ Colunas encontradas: {column_names}")
-    
-    # Check which columns are missing
-    missing_columns = []
-    if 'cloudinary_url' not in column_names:
-        missing_columns.append('cloudinary_url')
-    if 'cloudinary_public_id' not in column_names:
-        missing_columns.append('cloudinary_public_id')
-    
-    if not missing_columns:
-        print("✅ Todas as colunas Cloudinary já existem!")
-        return True
-    
-    print(f"⚠️  Colunas faltando: {missing_columns}")
-    print("🔧 Adicionando colunas faltando...")
-    
-    # Add missing columns
     try:
-        with engine.connect() as connection:
-            if 'cloudinary_url' in missing_columns:
-                print("  → Adicionando coluna 'cloudinary_url'...")
+        # Check which columns exist
+        print("  → Verificando coluna 'cloudinary_url'...")
+        has_cloudinary_url = check_column_exists(connection, 'images', 'cloudinary_url')
+        
+        print("  → Verificando coluna 'cloudinary_public_id'...")
+        has_cloudinary_public_id = check_column_exists(connection, 'images', 'cloudinary_public_id')
+        
+        if has_cloudinary_url and has_cloudinary_public_id:
+            print("\n✅ Todas as colunas Cloudinary já existem!")
+            return True
+        
+        # Add missing columns
+        if not has_cloudinary_url:
+            print("\n  → Adicionando coluna 'cloudinary_url'...")
+            try:
                 connection.execute(
-                    text("ALTER TABLE images ADD COLUMN cloudinary_url VARCHAR(500) NULL")
+                    text("ALTER TABLE images ADD COLUMN cloudinary_url VARCHAR(500) DEFAULT NULL")
                 )
-                connection.commit()
-                print("    ✅ Coluna 'cloudinary_url' adicionada")
-            
-            if 'cloudinary_public_id' in missing_columns:
-                print("  → Adicionando coluna 'cloudinary_public_id'...")
+                print("    ✅ Coluna 'cloudinary_url' adicionada com sucesso")
+            except Exception as e:
+                print(f"    ❌ Erro ao adicionar 'cloudinary_url': {e}")
+        
+        if not has_cloudinary_public_id:
+            print("\n  → Adicionando coluna 'cloudinary_public_id'...")
+            try:
                 connection.execute(
-                    text("ALTER TABLE images ADD COLUMN cloudinary_public_id VARCHAR(500) NULL")
+                    text("ALTER TABLE images ADD COLUMN cloudinary_public_id VARCHAR(500) DEFAULT NULL")
                 )
-                connection.commit()
-                print("    ✅ Coluna 'cloudinary_public_id' adicionada")
+                print("    ✅ Coluna 'cloudinary_public_id' adicionada com sucesso")
+            except Exception as e:
+                print(f"    ❌ Erro ao adicionar 'cloudinary_public_id': {e}")
         
         print("\n✅ Banco de dados reparado com sucesso!")
         return True
         
     except Exception as e:
-        print(f"❌ Erro ao adicionar colunas: {e}")
+        print(f"❌ Erro geral ao reparar banco de dados: {e}")
         print(f"   Tipo de erro: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
         return False
+    finally:
+        try:
+            connection.close()
+        except:
+            pass
+
 
 if __name__ == "__main__":
     print("\n🚀 Iniciando reparo do banco de dados...\n")

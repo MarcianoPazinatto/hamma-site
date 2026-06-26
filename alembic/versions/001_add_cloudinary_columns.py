@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -19,23 +20,41 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Adicionar coluna cloudinary_url
-    op.add_column('images', sa.Column('cloudinary_url', sa.String(), nullable=True))
+    # Check if images table exists
+    ctx = op.get_context()
+    inspector = ctx.get_bind().inspector
     
-    # Adicionar coluna cloudinary_public_id
-    op.add_column('images', sa.Column('cloudinary_public_id', sa.String(), nullable=True))
+    # Get existing columns
+    try:
+        columns = inspector.get_columns('images')
+        column_names = [col['name'] for col in columns]
+    except Exception:
+        # Table might not exist yet, which is fine
+        column_names = []
     
-    # Fazer filename nullable para compatibilidade
-    op.alter_column('images', 'filename',
-               existing_type=sa.String(),
-               nullable=True)
+    # Adicionar coluna cloudinary_url se não existir
+    if 'cloudinary_url' not in column_names:
+        op.add_column('images', sa.Column('cloudinary_url', sa.String(), nullable=True))
+    
+    # Adicionar coluna cloudinary_public_id se não existir
+    if 'cloudinary_public_id' not in column_names:
+        op.add_column('images', sa.Column('cloudinary_public_id', sa.String(), nullable=True))
 
 
 def downgrade() -> None:
-    # Reverter as mudanças se necessário
-    op.drop_column('images', 'cloudinary_public_id')
-    op.drop_column('images', 'cloudinary_url')
+    ctx = op.get_context()
+    inspector = ctx.get_bind().inspector
     
-    op.alter_column('images', 'filename',
-               existing_type=sa.String(),
-               nullable=False)
+    # Get existing columns
+    try:
+        columns = inspector.get_columns('images')
+        column_names = [col['name'] for col in columns]
+    except Exception:
+        column_names = []
+    
+    # Remove columns if they exist
+    if 'cloudinary_public_id' in column_names:
+        op.drop_column('images', 'cloudinary_public_id')
+    
+    if 'cloudinary_url' in column_names:
+        op.drop_column('images', 'cloudinary_url')
