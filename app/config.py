@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB em bytes
     ALLOWED_EXTENSIONS: list = ["jpeg", "png", "gif", "webp"]
     
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME: str = ""
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
+    
     # CORS
     CORS_ORIGINS: list = ["*"]
     

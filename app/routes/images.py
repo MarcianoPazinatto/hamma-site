@@ -9,6 +9,7 @@ from ..database import get_db
 from ..models import User, Image
 from ..schemas import ImageResponse, ImageWithOwner, ImageCreate
 from ..auth import decode_token
+from ..services import cloudinary_service
 
 router = APIRouter(prefix="/images", tags=["images"])
 
@@ -56,7 +57,7 @@ def list_my_images(
 
 
 @router.post("/upload", response_model=ImageResponse)
-def upload_image(
+async def upload_image(
     title: str = Form(...),
     value: float = Form(...),
     description: str = Form(default=""),
@@ -77,22 +78,17 @@ def upload_image(
     if file.content_type not in ["image/jpeg", "image/png", "image/gif", "image/webp"]:
         raise HTTPException(status_code=400, detail="Formato de imagem inválido")
 
-    # Salvar arquivo
-    filename = f"{datetime.utcnow().timestamp()}_{file.filename}"
-    filepath = os.path.join(UPLOAD_DIRECTORY, filename)
-    
-    try:
-        with open(filepath, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Erro ao salvar arquivo")
+    # Fazer upload para Cloudinary
+    cloudinary_url, public_id = await cloudinary_service.upload_image(file)
 
     # Salvar no banco de dados
     db_image = Image(
         title=title,
         description=description,
         value=value,
-        filename=filename,
+        filename=None,  # Não usar filename local mais
+        cloudinary_url=cloudinary_url,
+        cloudinary_public_id=public_id,
         owner_id=user.id
     )
     db.add(db_image)
@@ -103,7 +99,7 @@ def upload_image(
 
 
 @router.put("/{image_id}", response_model=ImageResponse)
-def update_image(
+async def update_image(
     image_id: int,
     title: str = Form(None),
     value: float = Form(None),
@@ -141,22 +137,16 @@ def update_image(
         if file.content_type not in ["image/jpeg", "image/png", "image/gif", "image/webp"]:
             raise HTTPException(status_code=400, detail="Formato de imagem inválido")
 
-        # Deletar arquivo antigo
-        old_filepath = os.path.join(UPLOAD_DIRECTORY, image.filename)
-        if os.path.exists(old_filepath):
-            os.remove(old_filepath)
+        # Deletar arquivo antigo do Cloudinary
+        if image.cloudinary_public_id:
+            await cloudinary_service.delete_image(image.cloudinary_public_id)
 
-        # Salvar novo arquivo
-        filename = f"{datetime.utcnow().timestamp()}_{file.filename}"
-        filepath = os.path.join(UPLOAD_DIRECTORY, filename)
+        # Fazer upload do novo arquivo
+        cloudinary_url, public_id = await cloudinary_service.upload_image(file)
         
-        try:
-            with open(filepath, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail="Erro ao salvar arquivo")
-
-        image.filename = filename
+        image.cloudinary_url = cloudinary_url
+        image.cloudinary_public_id = public_id
+        image.filename = None
 
     db.commit()
     db.refresh(image)
@@ -165,7 +155,7 @@ def update_image(
 
 
 @router.delete("/{image_id}")
-def delete_image(
+async def delete_image(
     image_id: int,
     db: Session = Depends(get_db),
     token: str = None
@@ -182,10 +172,9 @@ def delete_image(
     if not image:
         raise HTTPException(status_code=404, detail="Imagem não encontrada")
 
-    # Deletar arquivo
-    filepath = os.path.join(UPLOAD_DIRECTORY, image.filename)
-    if os.path.exists(filepath):
-        os.remove(filepath)
+    # Deletar imagem do Cloudinary
+    if image.cloudinary_public_id:
+        await cloudinary_service.delete_image(image.cloudinary_public_id)
 
     # Deletar do banco de dados
     db.delete(image)

@@ -25,7 +25,9 @@ class Image(Base):
     title = Column(String, index=True)
     description = Column(String, nullable=True)
     value = Column(Float)
-    filename = Column(String, unique=True, index=True)
+    filename = Column(String, unique=True, index=True, nullable=True)  # Mantido para compatibilidade
+    cloudinary_url = Column(String, nullable=True)  # URL da imagem no Cloudinary
+    cloudinary_public_id = Column(String, nullable=True)  # ID público para deleção
     owner_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 
