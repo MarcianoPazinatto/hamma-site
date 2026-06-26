@@ -293,20 +293,18 @@
         async function loadImages() {
             try {
                 const token = localStorage.getItem('token');
-                
-                // Buscar informações do usuário logado
-                const userResponse = await fetch(`/auth/user-info?token=${token}`);
-                const userInfo = await userResponse.json();
-                const currentUserId = userInfo.id;
-                
-                // Buscar TODAS as imagens
-                const response = await fetch('/images/');
-                const allImages = await response.json();
+                // Usar o novo endpoint que já filtra as imagens do usuário autenticado
+                const response = await fetch(`/images/my-images?token=${encodeURIComponent(token)}`);
+                const userImages = await response.json();
 
                 const gallery = document.getElementById('gallery');
                 const emptyState = document.getElementById('empty-state');
 
-                if (!allImages || allImages.length === 0) {
+                console.log('Token:', token);
+                console.log('User images:', userImages);
+                console.log('Response status:', response.status);
+
+                if (userImages.length === 0) {
                     gallery.style.display = 'none';
                     emptyState.style.display = 'block';
                     return;
@@ -316,25 +314,27 @@
                 emptyState.style.display = 'none';
                 gallery.innerHTML = '';
 
-                allImages.forEach(image => {
+                userImages.forEach(image => {
                     const date = new Date(image.created_at).toLocaleDateString('pt-BR');
                     const item = document.createElement('div');
                     item.className = 'gallery-item';
-                    
+                    // Usar cloudinary_url se disponível, caso contrário usar filename
+                    const imageUrl = image.cloudinary_url || `/static/uploads/${image.filename}`;
                     item.innerHTML = `
-                        <img src="/static/uploads/${image.filename}" alt="${image.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23ccc%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3EImagem não encontrada%3C/text%3E%3C/svg%3E'">
+                        <img src="${imageUrl}" alt="${image.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23ccc%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3EImagem não encontrada%3C/text%3E%3C/svg%3E'">
                         <div class="gallery-info">
                             <div class="gallery-title" title="${image.title}">${image.title}</div>
                             ${image.description ? `<div class="gallery-description">${image.description}</div>` : ''}
                             <div class="gallery-price">R$ ${image.value.toFixed(2)}</div>
-                            <div class="gallery-date">Por ${image.owner.username} - ${date}</div>
+                            <div class="gallery-date">${date}</div>
                             <div class="gallery-actions">
                                 <button class="btn-edit" 
                                     data-id="${image.id}" 
                                     data-title="${image.title}" 
                                     data-value="${image.value}" 
                                     data-description="${image.description}" 
-                                    data-filename="${image.filename}">
+                                    data-filename="${image.filename}"
+                                    data-cloudinary-url="${image.cloudinary_url || ''}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
                                 <button class="btn-delete" data-id="${image.id}">
@@ -358,7 +358,8 @@
                             btn.dataset.value,
                             btn.dataset.description,
                             btn.dataset.filename,
-                            token
+                            token,
+                            btn.dataset.cloudinaryUrl
                         );
                     }
                     
@@ -398,13 +399,15 @@
         }
 
         // Abrir modal de edição
-        function openEditModal(imageId, title, value, description, filename, token) {
+        function openEditModal(imageId, title, value, description, filename, token, cloudinaryUrl) {
             const modal = new bootstrap.Modal(document.getElementById('editModal'));
             document.getElementById('editImageId').value = imageId;
             document.getElementById('editTitle').value = title;
             document.getElementById('editValue').value = value;
             document.getElementById('editDescription').value = description;
-            document.getElementById('editImagePreview').src = `/static/uploads/${filename}`;
+            // Usar cloudinary_url se disponível, caso contrário usar filename
+            const imageUrl = cloudinaryUrl || `/static/uploads/${filename}`;
+            document.getElementById('editImagePreview').src = imageUrl;
             document.getElementById('editFileInput').value = '';
             document.getElementById('editToken').value = token;
             
