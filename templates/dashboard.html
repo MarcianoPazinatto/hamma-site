@@ -156,6 +156,7 @@
             width: 100%;
             height: 350px;
             object-fit: contain;
+            cursor: pointer;
         }
         
         .gallery-info {
@@ -573,7 +574,15 @@
                     gallery.appendChild(item);
                 });
 
-                // Adicionar event listeners aos botões
+                // Adicionar event listeners aos botões e imagens
+                document.querySelectorAll('.gallery-item img').forEach(img => {
+                    img.addEventListener('click', function() {
+                        const imageUrl = this.src;
+                        const imageTitle = this.closest('.gallery-item').querySelector('.gallery-title').textContent;
+                        openImageModal(imageUrl, imageTitle);
+                    });
+                });
+
                 document.querySelectorAll('.btn-edit').forEach(btn => {
                     btn.addEventListener('click', function() {
                         openEditModal(
@@ -617,6 +626,14 @@
                 document.getElementById('alert-container').innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-circle"></i> Erro ao deletar imagem!</div>';
                 console.error('Erro:', error);
             }
+        }
+
+        // Abrir modal com imagem completa
+        function openImageModal(imageUrl, imageTitle) {
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            document.getElementById('fullImage').src = imageUrl;
+            document.getElementById('fullImageTitle').textContent = imageTitle;
+            modal.show();
         }
 
         // Abrir modal de edição
@@ -675,6 +692,21 @@
             loadImages();
         });
     </script>
+
+    <!-- Modal de Visualização de Imagem Completa -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(0, 0, 0, 0.9);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h5 class="modal-title" id="fullImageTitle" style="color: white;"><i class="bi bi-image"></i> Visualizar Imagem</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center" style="height: 80vh;">
+                    <img id="fullImage" src="" alt="Imagem Completa" style="max-width: 95%; max-height: 95%; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de Edição -->
     <div class="modal fade" id="editModal" tabindex="-1">
