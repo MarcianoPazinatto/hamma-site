@@ -388,6 +388,13 @@
             </form>
         </div>
 
+        <div id="gallery" class="gallery"></div>
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <i class="bi bi-image"></i>
+            <h3>Nenhuma imagem para gerenciar</h3>
+            <p>Clique em um botão acima para enviar sua primeira imagem.</p>
+        </div>
+
         <div style="background: white; border-radius: 15px; padding: 30px; margin-top: 50px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);">
             <h3 style="color: #333; margin-bottom: 20px;">
                 <i class="bi bi-pencil-square"></i> Gerenciar Suas Imagens
@@ -576,9 +583,12 @@
 
                 // Adicionar event listeners aos botões e imagens
                 document.querySelectorAll('.gallery-item img').forEach(img => {
-                    img.addEventListener('click', function() {
+                    img.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const imageUrl = this.src;
                         const imageTitle = this.closest('.gallery-item').querySelector('.gallery-title').textContent;
+                        console.log('Clicou na imagem:', imageUrl);
                         openImageModal(imageUrl, imageTitle);
                     });
                 });
